@@ -1,2 +1,2 @@
-# magneto
+# Magneto
 Source code 
