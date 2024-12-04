@@ -1,6 +1,11 @@
 //#include <VibrationMotor.h>/
 #include <string.h>
 
+#define VIB_MOTOR_MAX_PWM                       125
+#define FORCE_SENSOR_NO_CONTACT_MAX_THRESHOLD   60
+
+
+
 volatile int vibMotorPin1 = 6;
 volatile int vibMotorPin2 = 5;
 
@@ -128,26 +133,26 @@ void updateState(){
 
 void loop() {
 
-
-
   fsrReading1 = analogRead(fsrPin1);
   fsrReading2 = analogRead(fsrPin2);
 
   fsrReading1 = map(fsrReading1, 0, 850, 0, 1023);
   fsrReading2 = map(fsrReading2, 0, 850, 0, 1023);
 
+//  fsrReading1=0;///
+
 
   if (fsrReading1 > fsrReading2){
 
     for (int i = 0; i < 2; i++){
-      if (fsrReading1 >= 0 && fsrReading1 < 60){ //no pressure 
+      if (fsrReading1 >= 0 && fsrReading1 < FORCE_SENSOR_NO_CONTACT_MAX_THRESHOLD){ //no pressure 
           analogWrite(vibMotorPin1, 0);
       }
-      else if(fsrReading1 >= 60 && fsrReading1 < 200){ //light touch
+      else if(fsrReading1 >= FORCE_SENSOR_NO_CONTACT_MAX_THRESHOLD && fsrReading1 < 200){ //light touch
           Serial.print("fsr 1: ");
           Serial.println(fsrReading1);
     
-          analogWrite(vibMotorPin1, 255); // 255 is full speed
+          analogWrite(vibMotorPin1, VIB_MOTOR_MAX_PWM); // 255 is full speed
           delay(125);                // Run motor for 1 second
           analogWrite(vibMotorPin1, 0);
           delay(125); 
@@ -156,7 +161,7 @@ void loop() {
           Serial.print("fsr 1: ");
           Serial.println(fsrReading1);
     
-          analogWrite(vibMotorPin1, 255); // 255 is full speed
+          analogWrite(vibMotorPin1, VIB_MOTOR_MAX_PWM); // 255 is full speed
           delay(62);                // Run motor for 1 second
           analogWrite(vibMotorPin1, 0);
           delay(62); 
@@ -165,7 +170,7 @@ void loop() {
           Serial.print("fsr 1: ");
           Serial.println(fsrReading1);
     
-          analogWrite(vibMotorPin1, 255); // 255 is full speed
+          analogWrite(vibMotorPin1, VIB_MOTOR_MAX_PWM); // 255 is full speed
           delay(31);                // Run motor for 1 second
           analogWrite(vibMotorPin1, 0);
           delay(31); 
@@ -174,7 +179,7 @@ void loop() {
           Serial.print("fsr 1: ");
           Serial.println(fsrReading1);
     
-          analogWrite(vibMotorPin1, 255); // 255 is full speed
+          analogWrite(vibMotorPin1, VIB_MOTOR_MAX_PWM); // 255 is full speed
           delay(10);                // Run motor for 1 second
           analogWrite(vibMotorPin1, 0);
           delay(10); 
@@ -183,14 +188,14 @@ void loop() {
   } else {
 
     for (int i = 0; i < 2; i++){
-      if (fsrReading2 >= 0 && fsrReading2 < 60){ //no pressure 
+      if (fsrReading2 >= 0 && fsrReading2 < FORCE_SENSOR_NO_CONTACT_MAX_THRESHOLD){ //no pressure 
           analogWrite(vibMotorPin2, 0);
       }
-      else if(fsrReading2 >= 60 && fsrReading2 < 200){ //light touch
+      else if(fsrReading2 >= FORCE_SENSOR_NO_CONTACT_MAX_THRESHOLD && fsrReading2 < 200){ //light touch
           Serial.print("fsr 2: ");
           Serial.println(fsrReading2);
     
-          analogWrite(vibMotorPin2, 100); // 255 is full speed
+          analogWrite(vibMotorPin2, VIB_MOTOR_MAX_PWM); // 255 is full speed
           delay(125);                // Run motor for 1 second
           analogWrite(vibMotorPin2, 0);
           delay(125); 
@@ -199,7 +204,7 @@ void loop() {
           Serial.print("fsr 2: ");
           Serial.println(fsrReading2);
     
-          analogWrite(vibMotorPin2, 100); // 255 is full speed
+          analogWrite(vibMotorPin2, VIB_MOTOR_MAX_PWM); // 255 is full speed
           delay(62);                // Run motor for 1 second
           analogWrite(vibMotorPin2, 0);
           delay(62); 
@@ -208,7 +213,7 @@ void loop() {
           Serial.print("fsr 2: ");
           Serial.println(fsrReading2);
     
-          analogWrite(vibMotorPin2, 100); // 255 is full speed
+          analogWrite(vibMotorPin2, VIB_MOTOR_MAX_PWM); // 255 is full speed
           delay(32);                // Run motor for 1 second
           analogWrite(vibMotorPin2, 0);
           delay(32); 
@@ -217,7 +222,7 @@ void loop() {
           Serial.print("fsr 2: ");
           Serial.println(fsrReading2);
     
-          analogWrite(vibMotorPin2, 100); // 255 is full speed
+          analogWrite(vibMotorPin2, VIB_MOTOR_MAX_PWM); // 255 is full speed
           delay(10);                // Run motor for 1 second
           analogWrite(vibMotorPin2, 0);
           delay(10); 
