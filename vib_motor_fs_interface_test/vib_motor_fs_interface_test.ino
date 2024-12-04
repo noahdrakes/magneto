@@ -72,10 +72,10 @@ void loop() {
   if (fsrReading1 > fsrReading2){
 
     for (int i = 0; i < 2; i++){
-      if (fsrReading1 >= 0 && fsrReading1 < 20){ //no pressure 
+      if (fsrReading1 >= 0 && fsrReading1 < 60){ //no pressure 
           analogWrite(vibMotorPin1, 0);
       }
-      else if(fsrReading1 >= 20 && fsrReading1 < 200){ //light touch
+      else if(fsrReading1 >= 60 && fsrReading1 < 200){ //light touch
           Serial.print("fsr 1: ");
           Serial.println(fsrReading1);
     
@@ -115,10 +115,10 @@ void loop() {
   } else {
 
     for (int i = 0; i < 2; i++){
-      if (fsrReading2 >= 0 && fsrReading2 < 20){ //no pressure 
+      if (fsrReading2 >= 0 && fsrReading2 < 60){ //no pressure 
           analogWrite(vibMotorPin2, 0);
       }
-      else if(fsrReading2 >= 20 && fsrReading2 < 200){ //light touch
+      else if(fsrReading2 >= 60 && fsrReading2 < 200){ //light touch
           Serial.print("fsr 2: ");
           Serial.println(fsrReading2);
     
