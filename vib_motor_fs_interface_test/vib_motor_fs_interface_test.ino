@@ -4,8 +4,6 @@
 #define VIB_MOTOR_MAX_PWM                       125
 #define FORCE_SENSOR_NO_CONTACT_MAX_THRESHOLD   60
 
-
-
 volatile int vibMotorPin1 = 6;
 volatile int vibMotorPin2 = 5;
 
@@ -16,8 +14,6 @@ volatile int encoderCount = 0;
 volatile int aState;
 volatile int aLastState; 
 
-// false = [0 to 14]
-// true = [15 to 29]
 volatile uint8_t encoder_side = 0;
 volatile uint8_t last_encoder_side = 0;
 
@@ -26,16 +22,14 @@ enum ENCODER_SIDE{
   ENCODER_SECOND_HALF
 };
 
-
 int fsrPin1 = 0;
-int fsrPin2 = 1;
+// int fsrPin2 = 1;
 int fsrReading1;
-int fsrReading2; 
+// int fsrReading2; 
 
 // VibrationMotor myVibrationMotor(motorPin);
 using namespace std;
 void setup() {
-  // put your setup code here, to run once:
   Serial.begin(115200);
   
   pinMode(vibMotorPin1, OUTPUT);
@@ -78,8 +72,7 @@ void calibrateEncoder(){
       Serial.println("Invalid character. Try again");
     }
     encoderCount = 0;
-  }
-    
+  }    
 }
 
 void updateEncoderPos(){
@@ -102,9 +95,7 @@ void updateEncoderPos(){
      Serial.print("ENCODER POS: ");
      Serial.println(encoderCount);
    } 
-   aLastState = aState; // Updates the previous state of the outputA with the current state
-
-
+   aLastState = aState; // Updates the previous state of the outputA with the current 
 }
 
 // switch vib motor based on catheter encoder position
@@ -121,10 +112,8 @@ void updateVibMotors(){
     vibMotorPin2 = temp;
     Serial.println("here");
   } 
-
   last_encoder_side = encoder_side;
 }
-
 
 void updateState(){
   updateEncoderPos();
@@ -132,108 +121,49 @@ void updateState(){
 }
 
 void loop() {
-
   fsrReading1 = analogRead(fsrPin1);
-  fsrReading2 = analogRead(fsrPin2);
-
   fsrReading1 = map(fsrReading1, 0, 850, 0, 1023);
-  fsrReading2 = map(fsrReading2, 0, 850, 0, 1023);
 
-//  fsrReading1=0;///
-
-
-  if (fsrReading1 > fsrReading2){
-
-    for (int i = 0; i < 2; i++){
-      if (fsrReading1 >= 0 && fsrReading1 < FORCE_SENSOR_NO_CONTACT_MAX_THRESHOLD){ //no pressure 
-          analogWrite(vibMotorPin1, 0);
-      }
-      else if(fsrReading1 >= FORCE_SENSOR_NO_CONTACT_MAX_THRESHOLD && fsrReading1 < 200){ //light touch
-          Serial.print("fsr 1: ");
-          Serial.println(fsrReading1);
-    
-          analogWrite(vibMotorPin1, VIB_MOTOR_MAX_PWM); // 255 is full speed
-          delay(125);                // Run motor for 1 second
-          analogWrite(vibMotorPin1, 0);
-          delay(125); 
-      }
-      else if (fsrReading1 >= 200 && fsrReading1 < 500) { //light squeeze
-          Serial.print("fsr 1: ");
-          Serial.println(fsrReading1);
-    
-          analogWrite(vibMotorPin1, VIB_MOTOR_MAX_PWM); // 255 is full speed
-          delay(62);                // Run motor for 1 second
-          analogWrite(vibMotorPin1, 0);
-          delay(62); 
-      }
-      else if (fsrReading1 >= 500 && fsrReading1 < 800) { //medium squeeze
-          Serial.print("fsr 1: ");
-          Serial.println(fsrReading1);
-    
-          analogWrite(vibMotorPin1, VIB_MOTOR_MAX_PWM); // 255 is full speed
-          delay(31);                // Run motor for 1 second
-          analogWrite(vibMotorPin1, 0);
-          delay(31); 
-      }
-      else { //big squeeze
-          Serial.print("fsr 1: ");
-          Serial.println(fsrReading1);
-    
-          analogWrite(vibMotorPin1, VIB_MOTOR_MAX_PWM); // 255 is full speed
-          delay(10);                // Run motor for 1 second
-          analogWrite(vibMotorPin1, 0);
-          delay(10); 
-      }
+  for (int i = 0; i < 2; i++){
+    if (fsrReading1 >= 0 && fsrReading1 < FORCE_SENSOR_NO_CONTACT_MAX_THRESHOLD){ //no pressure 
+        analogWrite(vibMotorPin1, 0);
     }
-  } else {
-
-    for (int i = 0; i < 2; i++){
-      if (fsrReading2 >= 0 && fsrReading2 < FORCE_SENSOR_NO_CONTACT_MAX_THRESHOLD){ //no pressure 
-          analogWrite(vibMotorPin2, 0);
-      }
-      else if(fsrReading2 >= FORCE_SENSOR_NO_CONTACT_MAX_THRESHOLD && fsrReading2 < 200){ //light touch
-          Serial.print("fsr 2: ");
-          Serial.println(fsrReading2);
-    
-          analogWrite(vibMotorPin2, VIB_MOTOR_MAX_PWM); // 255 is full speed
-          delay(125);                // Run motor for 1 second
-          analogWrite(vibMotorPin2, 0);
-          delay(125); 
-      }
-      else if (fsrReading2 >= 200 && fsrReading2 < 500) { //light squeeze
-          Serial.print("fsr 2: ");
-          Serial.println(fsrReading2);
-    
-          analogWrite(vibMotorPin2, VIB_MOTOR_MAX_PWM); // 255 is full speed
-          delay(62);                // Run motor for 1 second
-          analogWrite(vibMotorPin2, 0);
-          delay(62); 
-      }
-      else if (fsrReading2 >= 500 && fsrReading2 < 800) { //medium squeeze
-          Serial.print("fsr 2: ");
-          Serial.println(fsrReading2);
-    
-          analogWrite(vibMotorPin2, VIB_MOTOR_MAX_PWM); // 255 is full speed
-          delay(32);                // Run motor for 1 second
-          analogWrite(vibMotorPin2, 0);
-          delay(32); 
-      }
-      else { //big squeeze
-          Serial.print("fsr 2: ");
-          Serial.println(fsrReading2);
-    
-          analogWrite(vibMotorPin2, VIB_MOTOR_MAX_PWM); // 255 is full speed
-          delay(10);                // Run motor for 1 second
-          analogWrite(vibMotorPin2, 0);
-          delay(10); 
-      }
+    else if(fsrReading1 >= FORCE_SENSOR_NO_CONTACT_MAX_THRESHOLD && fsrReading1 < 200){ //light touch
+        Serial.print("fsr 1: ");
+        Serial.println(fsrReading1);
+  
+        analogWrite(vibMotorPin1, VIB_MOTOR_MAX_PWM); // 255 is full speed
+        delay(125);                // Run motor for 1 second
+        analogWrite(vibMotorPin1, 0);
+        delay(125); 
+    }
+    else if (fsrReading1 >= 200 && fsrReading1 < 500) { //light squeeze
+        Serial.print("fsr 1: ");
+        Serial.println(fsrReading1);
+  
+        analogWrite(vibMotorPin1, VIB_MOTOR_MAX_PWM); // 255 is full speed
+        delay(62);                // Run motor for 1 second
+        analogWrite(vibMotorPin1, 0);
+        delay(62); 
+    }
+    else if (fsrReading1 >= 500 && fsrReading1 < 800) { //medium squeeze
+        Serial.print("fsr 1: ");
+        Serial.println(fsrReading1);
+  
+        analogWrite(vibMotorPin1, VIB_MOTOR_MAX_PWM); // 255 is full speed
+        delay(31);                // Run motor for 1 second
+        analogWrite(vibMotorPin1, 0);
+        delay(31); 
+    }
+    else { //big squeeze
+        Serial.print("fsr 1: ");
+        Serial.println(fsrReading1);
+  
+        analogWrite(vibMotorPin1, VIB_MOTOR_MAX_PWM); // 255 is full speed
+        delay(10);                // Run motor for 1 second
+        analogWrite(vibMotorPin1, 0);
+        delay(10); 
     }
   }
-
-
-
-
-  
-
 
 }
