@@ -12,6 +12,9 @@ volatile int vibMotorPin2 = 5;
 const uint8_t encA = 2;
 const uint8_t encB = 3;
 
+float FSR1_OFFSET;
+float FSR2_OFFSET;
+
 volatile int encoderCount = 0;
 volatile int aState;
 volatile int aLastState; 
@@ -32,26 +35,10 @@ int fsrPin2 = 1;
 int fsrReading1;
 int fsrReading2; 
 
+float fsrOffset[2];
+
 // VibrationMotor myVibrationMotor(motorPin);
 using namespace std;
-void setup() {
-  // put your setup code here, to run once:
-  Serial.begin(115200);
-  
-  pinMode(vibMotorPin1, OUTPUT);
-  pinMode(vibMotorPin2, OUTPUT);
-  
-  pinMode (encA,INPUT);
-  pinMode (encB,INPUT);
-
-  aLastState = digitalRead(encA);   
-
-  attachInterrupt(digitalPinToInterrupt(encA),updateState, CHANGE );
-
-  clearSerialMon();
-
-  calibrateEncoder();
-}
 
 void clearSerialMon(){
   for (int i = 0; i < 5; i++){
@@ -103,8 +90,6 @@ void updateEncoderPos(){
      Serial.println(encoderCount);
    } 
    aLastState = aState; // Updates the previous state of the outputA with the current state
-
-
 }
 
 // switch vib motor based on catheter encoder position
@@ -125,11 +110,73 @@ void updateVibMotors(){
   last_encoder_side = encoder_side;
 }
 
+bool fsrCalibration(){
+  Serial.println("==FSR CALIBRATION===");
+  Serial.println("Leave force sensors untouched until calibration is finished.");
+  Serial.println("Calibrating...");
+  delay(1000);
+
+  float fsr1Total = 0;
+  float fsr2Total = 0;
+
+  float fsr1_offset_avg = 0;
+  float fsr2_offset_avg = 0;
+
+  for (int i = 0; i < 1000; i++){
+    fsrReading1 = analogRead(fsrPin1);
+    fsrReading2 = analogRead(fsrPin2);
+
+    fsrReading1 = map(fsrReading1, 0, 850, 0, 1023);
+    fsrReading2 = map(fsrReading2, 0, 850, 0, 1023);
+
+    fsr1Total += fsrReading1;
+    fsr2Total += fsrReading2;
+  }
+
+  FSR1_OFFSET = fsr1Total/1000;
+  FSR2_OFFSET = fsr1Total/1000;
+
+  if (FSR1_OFFSET >= 200 || FSR2_OFFSET >= 200){
+    return false;
+  }
+
+  return true;
+}
+
 
 void updateState(){
   updateEncoderPos();
   updateVibMotors();
 }
+
+void setup() {
+  // put your setup code here, to run once:
+  Serial.begin(115200);
+  
+  pinMode(vibMotorPin1, OUTPUT);
+  pinMode(vibMotorPin2, OUTPUT);
+  
+  pinMode (encA,INPUT);
+  pinMode (encB,INPUT);
+
+  aLastState = digitalRead(encA);   
+
+  attachInterrupt(digitalPinToInterrupt(encA),updateState, CHANGE );
+
+  clearSerialMon();
+
+  calibrateEncoder();
+
+  if(!fsrCalibration()){
+    Serial.println("Check FSR sensors. Reistory may be undergoin unintended tension,  or sensor may be broken.");
+  } else {
+    Serial.println("== CALIBRATION SUCCESS ==");
+  }
+
+  Serial.println("STARTING SIMULATION");
+  
+}
+
 
 void loop() {
 
@@ -138,8 +185,6 @@ void loop() {
 
   fsrReading1 = map(fsrReading1, 0, 850, 0, 1023);
   fsrReading2 = map(fsrReading2, 0, 850, 0, 1023);
-
-//  fsrReading1=0;///
 
 
   if (fsrReading1 > fsrReading2){
@@ -229,11 +274,4 @@ void loop() {
       }
     }
   }
-
-
-
-
-  
-
-
 }
